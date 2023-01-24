@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Socket Client</title>
+  </head>
+  <body>
+    <output id="messages">Messages:</output>
+
+    <script>
+      const messages = document.querySelector("#messages");
+      const socket = new WebSocket("ws://localhost:1337");
+
+      socket.onopen = (event) => {
+        console.log("Connection to websocket opened");
+
+        const id = Math.round(Math.random() * 100);
+
+        console.log("Sending...", id);
+
+        const intervalId = setInterval(() => {
+          const data = JSON.stringify([
+            {
+              id,
+              name: `${id} Rodrigo Lourenço`,
+              address: {
+                street: "My street",
+                number: 20 * id,
+              },
+              profession: "developer",
+            },
+            {
+              id,
+              name: `[${id} Jose da Silva`,
+              address: {
+                street: "My street",
+                number: 20 * id,
+              },
+              profession: "developer",
+            },
+            {
+              id,
+              name: `[${id} Mary Santos`,
+              address: {
+                street: "My street",
+                number: 20 * id,
+              },
+              profession: "developer",
+            },
+          ]);
+
+          socket.send(data);
+        }, 1000);
+
+        setTimeout(() => {
+          clearInterval(intervalId);
+        }, 5000);
+      };
+      socket.onmessage = (msg) => {
+        const message = msg.data;
+
+        console.log(`You got a message: ${message}`);
+
+        messages.innerHTML += `<br/> ${message}`;
+      };
+      socket.onerror = (error) => console.error(`Web Socket Error: ${error}`);
+      socket.onclose = (event) =>
+        console.log("Disconnected from Websocket server");
+    </script>
+  </body>
+</html>
